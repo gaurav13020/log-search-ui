@@ -6,7 +6,6 @@ const SearchBox = () => {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -104,7 +103,7 @@ const SearchBox = () => {
           setPage(prev => prev + 1);
         }
 
-        setHasMore(logsData.data.length === 10);
+        
       }
     } catch (error) {
       console.error('Error fetching logs:', error);
@@ -118,7 +117,6 @@ const SearchBox = () => {
     // Reset the logs when doing a new search
     setLogs([]);
     setPage(1);
-    setHasMore(true);
     fetchLogs(true);
   };
 
@@ -128,16 +126,22 @@ const SearchBox = () => {
     setLogs([]);
     setError(null);
     setPage(1);
-    setHasMore(true);
   };
 
   const handleScroll = useCallback(() => {
     const logDisplay = document.getElementById('log-display');
-    if (logDisplay && logDisplay.scrollTop + logDisplay.clientHeight >= logDisplay.scrollHeight && !isLoading && hasMore) {
-      console.log('Reached bottom of scroll');
-      fetchLogs(false);
+    
+    
+    
+    if (logDisplay) {
+      const { scrollTop, scrollHeight, clientHeight } = logDisplay;
+      
+      if (scrollTop + clientHeight >= scrollHeight - 5 && !isLoading) {
+        console.log('Reached bottom of scroll');
+        fetchLogs(false);
+      }
     }
-  }, [isLoading, hasMore]);
+  }, [isLoading]);
 
   useEffect(() => {
     const logDisplay = document.getElementById('log-display');

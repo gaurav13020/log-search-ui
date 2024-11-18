@@ -113,7 +113,7 @@ const LogDisplay = ({ logs }) => {
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-word'
                   }}>
-                    {formatMetadata(log.metadata)}
+                    {formatMetadata(log.data.message)}
                   </div>
                 </td>
               </tr>
