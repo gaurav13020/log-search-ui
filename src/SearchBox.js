@@ -9,6 +9,8 @@ const SearchBox = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
+  const [regex, setRegex] = useState('');
+  const [text, setText] = useState('');
 
   useEffect(() => {
     const now = new Date();
@@ -45,7 +47,7 @@ const SearchBox = () => {
       console.log('fetching uuid');
       
       const uuidResponse = await fetch(
-        `http://localhost:3000/search`,
+        `http://localhost:3000/search?$startTime={startTime}&endTime=${endTime}&regex=${regex}&text=${text}`,
         {
           method: 'GET',
           headers: {
@@ -70,7 +72,7 @@ const SearchBox = () => {
 
       // Fetch the logs using the UUID and offset
       const logsResponse = await fetch(
-        `http://localhost:3000/search/${uuid}/${reset ? 0 : offset}`,
+        `http://localhost:3000/search/${uuid}/${reset ? 0 : offset}?regex=${regex}&text=${text}`,
         {
           method: 'GET',
           headers: {
@@ -93,6 +95,7 @@ const SearchBox = () => {
         if (reset) {
           setLogs(Array.isArray(logsData.data) ? logsData.data : []);
           setOffset(logsData.offset || 0);
+
           setPage(2);
         } else {
           setLogs(prevLogs => [
@@ -126,6 +129,8 @@ const SearchBox = () => {
     setLogs([]);
     setError(null);
     setPage(1);
+    setRegex('');
+    setText('');
   };
 
   const handleScroll = useCallback(() => {
@@ -199,6 +204,34 @@ const SearchBox = () => {
             />
           </label>
           
+          <label style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ marginBottom: '0.5rem' }}>Regex:</span>
+            <input
+              type="text"
+              value={regex}
+              onChange={(e) => setRegex(e.target.value)}
+              style={{ 
+                padding: '0.5rem',
+                border: '1px solid #ccc',
+                borderRadius: '4px'
+              }}
+            />
+          </label>
+          
+          <label style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ marginBottom: '0.5rem' }}>Text:</span>
+            <input
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              style={{ 
+                padding: '0.5rem',
+                border: '1px solid #ccc',
+                borderRadius: '4px'
+              }}
+            />
+          </label>
+          
           <div style={{ 
             display: 'flex', 
             gap: '0.5rem', 
@@ -264,6 +297,7 @@ const SearchBox = () => {
             </div>
             
             <div id="log-display" style={{ overflowY: 'auto', maxHeight: '400px', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem', backgroundColor: '#f9fafb' }}>
+              
               <LogDisplay logs={logs} />
             </div>
 
